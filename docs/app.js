@@ -1,252 +1,526 @@
-(() => {
-  document.documentElement.classList.add('js');
+/* ==========================================================================
+   SMILE® DENTAL STUDIO (НЕФТЕЮГАНСК, 13 МКР, Д. 42) — APP.JS
+   Choreography:
+   1. Center Iris Aperture Expand Preloader -> Hero Reveal
+   2. Live VITA Shade & Light Switcher in Hero
+   3. Pinned Horizontal Panorama Gallery Track (#services)
+   4. Slide-Out Aesthetic & Warranty Passport (#booking) with Scroll-Then-Act (1220ms) & Reset-On-Leave
+   ========================================================================== */
 
-  /* VITA Classical 16 shades ordered by brightness (value) from brightest B1 to darkest C4 */
-  const VITA = [
-    { code: 'B1', hex: '#FBF8EE', desc: 'самый светлый в классической шкале' },
-    { code: 'A1', hex: '#F9F3DF', desc: 'очень светлый тёплый' },
-    { code: 'B2', hex: '#F6EED5', desc: 'светлый сливочный' },
-    { code: 'D2', hex: '#F2E7CE', desc: 'светлый нейтральный' },
-    { code: 'A2', hex: '#F3E5C6', desc: 'естественный светлый' },
-    { code: 'C1', hex: '#ECE1C6', desc: 'спокойный серо-бежевый' },
-    { code: 'C2', hex: '#E8DAB9', desc: 'умеренный холодный' },
-    { code: 'D4', hex: '#E5D6B2', desc: 'средний нейтральный' },
-    { code: 'A3', hex: '#EFE0BD', desc: 'натуральный тёплый' },
-    { code: 'D3', hex: '#E4CEAC', desc: 'насыщенный нейтральный' },
-    { code: 'B3', hex: '#E8D1A7', desc: 'медово-бежевый' },
-    { code: 'A3.5', hex: '#E2C699', desc: 'тёплый выраженный' },
-    { code: 'B4', hex: '#DEC090', desc: 'глубокий жёлто-бежевый' },
-    { code: 'C3', hex: '#D8BE96', desc: 'приглушённый тёмный' },
-    { code: 'A4', hex: '#D1B284', desc: 'тёмный тёплый' },
-    { code: 'C4', hex: '#C7AA7E', desc: 'самый тёмный в шкале' }
-  ];
+(function () {
+  "use strict";
 
-  let idxNow = 8;  // A3
-  let idxGoal = 0; // B1
-  let currentTask = 'whiten';
+  const hasGSAP = typeof window.gsap !== "undefined";
+  const hasScrollTrigger = typeof window.ScrollTrigger !== "undefined";
+  const hasLenis = typeof window.Lenis !== "undefined";
 
-  const heroFan = document.getElementById('hero-fan');
-  const swatchesNow = document.getElementById('swatches-now');
-  const swatchesGoal = document.getElementById('swatches-goal');
-
-  if (heroFan) {
-    VITA.forEach((s, i) => {
-      const item = document.createElement('div');
-      item.className = 'fan-tab';
-      item.innerHTML = `<span class="fan-tab__tooth" style="background:${s.hex}"></span><span class="fan-tab__code">${s.code}</span>`;
-      item.addEventListener('click', () => {
-        idxNow = i;
-        renderCalibrator();
-        document.getElementById('vita')?.scrollIntoView({ behavior: 'smooth' });
-      });
-      heroFan.appendChild(item);
-    });
+  if (hasGSAP && hasScrollTrigger) {
+    gsap.registerPlugin(ScrollTrigger);
   }
 
-  function buildSwatches(container, groupName, getSelectedIdx, onSelect) {
-    if (!container) return;
-    VITA.forEach((s, i) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'swatch';
-      btn.setAttribute('role', 'radio');
-      btn.setAttribute('aria-checked', String(i === getSelectedIdx()));
-      btn.setAttribute('aria-label', `Оттенок ${s.code}, ${s.desc}`);
-      btn.dataset.idx = String(i);
-      btn.innerHTML = `<span class="swatch__chip" style="background:${s.hex}"></span><span class="swatch__code">${s.code}</span>`;
-      btn.addEventListener('click', () => onSelect(i));
-      btn.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-          e.preventDefault();
-          const next = (i + 1) % VITA.length;
-          onSelect(next);
-          container.children[next]?.focus();
-        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-          e.preventDefault();
-          const prev = (i - 1 + VITA.length) % VITA.length;
-          onSelect(prev);
-          container.children[prev]?.focus();
-        }
-      });
-      container.appendChild(btn);
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* --------------------------------------------------------------------------
+     1. LENIS SMOOTH SCROLL + ANCHOR INTERCEPTION
+     -------------------------------------------------------------------------- */
+  let lenis = null;
+  if (hasLenis && !prefersReducedMotion) {
+    lenis = new Lenis({
+      duration: 1.12,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
     });
-  }
 
-  buildSwatches(swatchesNow, 'now', () => idxNow, (i) => {
-    idxNow = i;
-    renderCalibrator();
-  });
-
-  buildSwatches(swatchesGoal, 'goal', () => idxGoal, (i) => {
-    idxGoal = i;
-    renderCalibrator();
-  });
-
-  const taskTabs = document.getElementById('task-tabs');
-  if (taskTabs) {
-    taskTabs.querySelectorAll('.task-tab').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        currentTask = btn.dataset.task || 'whiten';
-        taskTabs.querySelectorAll('.task-tab').forEach((b) => {
-          b.setAttribute('aria-checked', String(b === btn));
-        });
-        renderCalibrator();
+    if (hasGSAP && hasScrollTrigger) {
+      lenis.on("scroll", ScrollTrigger.update);
+      gsap.ticker.add((time) => {
+        lenis.raf(time * 1000);
       });
-    });
-  }
-
-  function renderCalibrator() {
-    const now = VITA[idxNow];
-    const goal = VITA[idxGoal];
-    const steps = idxNow - idxGoal; // positive means lightening
-
-    if (swatchesNow) {
-      [...swatchesNow.children].forEach((el, i) => el.setAttribute('aria-checked', String(i === idxNow)));
-    }
-    if (swatchesGoal) {
-      [...swatchesGoal.children].forEach((el, i) => el.setAttribute('aria-checked', String(i === idxGoal)));
-    }
-
-    const outNow = document.getElementById('out-now');
-    const outGoal = document.getElementById('out-goal');
-    if (outNow) outNow.textContent = `${now.code} · ${now.desc}`;
-    if (outGoal) outGoal.textContent = `${goal.code} · ${goal.desc}`;
-
-    const tagNow = document.getElementById('tag-now');
-    const tagGoal = document.getElementById('tag-goal');
-    if (tagNow) tagNow.textContent = now.code;
-    if (tagGoal) tagGoal.textContent = goal.code;
-
-    const svgNow = document.getElementById('svg-teeth-now');
-    const svgGoal = document.getElementById('svg-teeth-goal');
-    if (svgNow) svgNow.setAttribute('fill', now.hex);
-    if (svgGoal) svgGoal.setAttribute('fill', goal.hex);
-
-    const deltaEl = document.getElementById('verdict-delta');
-    const titleEl = document.getElementById('verdict-title');
-    const textEl = document.getElementById('verdict-text');
-
-    if (currentTask === 'crown') {
-      deltaEl.textContent = `Подбор коронки: ориентир ${goal.code}`;
-      titleEl.textContent = 'Ортопед сверит цвет коронки при дневном свете';
-      textEl.textContent = steps > 2
-        ? `Вы выбрали оттенок ${goal.code}, который светлее текущего (${now.code}) на ${steps} ступ. Если вы хотите общую улыбку светлее, сначала проводят чистку или отбеливание, и через 10–14 дней подбирают цвет коронки.`
-        : `Керамическую или циркониевую коронку изготовят в тон ${goal.code}, чтобы она не выделялась в зубном ряду.`;
-      return;
-    }
-
-    if (currentTask === 'filling') {
-      deltaEl.textContent = `Реставрация: тон ${goal.code}`;
-      titleEl.textContent = 'Художественная реставрация переднего зуба в тон эмали';
-      textEl.textContent = steps > 2
-        ? `Желаемый тон (${goal.code}) заметно светлее исходного (${now.code}). Чтобы новая пломба не выглядела светлым пятном, перед реставрацией делают профгигиену Air-Flow или отбеливание.`
-        : `Терапевт подберёт композитный материал под оттенок ${goal.code} с учётом прозрачности режущего края.`;
-      return;
-    }
-
-    // Default task: whiten
-    if (steps <= 0) {
-      deltaEl.textContent = `Без осветления (${now.code} → ${goal.code})`;
-      titleEl.textContent = 'Поддерживающая гигиена: ультразвук + Air-Flow + фторирование';
-      textEl.textContent = 'Когда свой оттенок устраивает, достаточно раз в полгода снимать пигментированный налёт и зубной камень.';
-    } else if (steps <= 3) {
-      deltaEl.textContent = `Осветление на ${steps} ${steps === 1 ? 'ступень' : 'ступени'} (${now.code} → ${goal.code})`;
-      titleEl.textContent = 'Начнём с профессиональной чистки Air-Flow';
-      textEl.textContent = 'Разница в 1–3 ступени по шкале VITA часто уходит после снятия налёта от кофе и чая аппаратом Air-Flow. Если после чистки захочется светлее, обсудим Zoom.';
+      gsap.ticker.lagSmoothing(0);
     } else {
-      deltaEl.textContent = `Осветление на ${steps} ступ. по яркости (${now.code} → ${goal.code})`;
-      titleEl.textContent = 'Подойдёт кабинетное отбеливание Zoom после осмотра эмали';
-      textEl.textContent = 'При переходе на 4 и более ступеней одной чистки недостаточно. Сначала врач проверит, нет ли трещин и кариеса, проведёт профгигиену и затем выполнит отбеливание Zoom.';
+      function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
     }
   }
 
-  renderCalibrator();
-
-  const applyBtn = document.getElementById('vita-apply');
-  if (applyBtn) {
-    applyBtn.addEventListener('click', () => {
-      const now = VITA[idxNow];
-      const goal = VITA[idxGoal];
-      const taskNames = {
-        whiten: 'осветление эмали',
-        crown: 'подбор коронки в тон',
-        filling: 'реставрация переднего зуба'
-      };
-      const note = document.getElementById('f-note');
-      if (note) {
-        note.value = `Шкала VITA: сейчас ${now.code}, хочу ${goal.code} (${taskNames[currentTask]}).`;
-      }
-      setTimeout(() => document.getElementById('f-name')?.focus({ preventScroll: true }), 350);
-    });
+  function smoothScrollTo(targetSelector, offset = -84) {
+    const target = document.querySelector(targetSelector);
+    if (!target) return;
+    if (lenis) {
+      lenis.scrollTo(target, { offset, duration: 1.15 });
+    } else {
+      const top = target.getBoundingClientRect().top + window.pageYOffset + offset;
+      window.scrollTo({ top, behavior: "smooth" });
+    }
   }
 
-  /* FORM & PHONE */
-  const form = document.getElementById('form');
-  const phone = document.getElementById('f-phone');
-  const nameInput = document.getElementById('f-name');
-
-  if (phone) {
-    phone.addEventListener('input', () => {
-      let d = phone.value.replace(/\D/g, '');
-      if (d.startsWith('8')) d = '7' + d.slice(1);
-      if (!d.startsWith('7')) d = '7' + d;
-      d = d.slice(0, 11);
-      const p = d.slice(1);
-      let out = '+7';
-      if (p.length) out += ' ' + p.slice(0, 3);
-      if (p.length > 3) out += ' ' + p.slice(3, 6);
-      if (p.length > 6) out += '-' + p.slice(6, 8);
-      if (p.length > 8) out += '-' + p.slice(8, 10);
-      phone.value = out;
-      if (phone.getAttribute('aria-invalid') === 'true' && p.length === 10) setErr(phone, false);
-    });
-  }
-
-  function setErr(input, bad) {
-    if (!input) return;
-    input.setAttribute('aria-invalid', String(bad));
-    const err = document.getElementById(input.id + '-err');
-    if (err) err.hidden = !bad;
-  }
-
-  if (nameInput) {
-    nameInput.addEventListener('input', () => {
-      if (nameInput.value.trim().length >= 2) setErr(nameInput, false);
-    });
-  }
-
-  if (form) {
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const nameBad = !nameInput || nameInput.value.trim().length < 2;
-      const digits = phone ? phone.value.replace(/\D/g, '') : '';
-      const phoneBad = digits.length !== 11;
-      setErr(nameInput, nameBad);
-      setErr(phone, phoneBad);
-      if (nameBad) { nameInput?.focus(); return; }
-      if (phoneBad) { phone?.focus(); return; }
-      form.hidden = true;
-      const done = document.getElementById('form-done');
-      if (done) {
-        done.hidden = false;
-        done.focus();
+  document.querySelectorAll('a[href^="#"]').forEach((link) => {
+    link.addEventListener("click", (e) => {
+      const href = link.getAttribute("href");
+      if (!href || href === "#") return;
+      if (link.classList.contains("js-pick-service")) return;
+      const target = document.querySelector(href);
+      if (target) {
+        e.preventDefault();
+        smoothScrollTo(href, href === "#top" ? 0 : -84);
       }
     });
+  });
+
+  /* --------------------------------------------------------------------------
+     2. SLIDING NAVBAR INDICATOR PILL
+     -------------------------------------------------------------------------- */
+  const nav = document.getElementById("main-nav");
+  const navIndicator = document.getElementById("nav-indicator");
+  const navLinks = nav ? Array.from(nav.querySelectorAll(".nav__link")) : [];
+
+  function moveNavIndicator(linkEl) {
+    if (!nav || !navIndicator || !linkEl) return;
+    const navRect = nav.getBoundingClientRect();
+    const linkRect = linkEl.getBoundingClientRect();
+    const left = linkRect.left - navRect.left - 4;
+    navIndicator.style.width = `${linkRect.width}px`;
+    navIndicator.style.transform = `translate3d(${left}px, 0, 0)`;
+    navIndicator.style.opacity = "1";
   }
 
-  /* SCROLL REVEAL */
-  const items = document.querySelectorAll('[data-reveal]');
-  if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((en) => {
-        if (en.isIntersecting) {
-          en.target.classList.add('is-in');
-          io.unobserve(en.target);
-        }
+  if (navLinks.length > 0) {
+    const activeLink = nav.querySelector(".nav__link.is-active") || navLinks[0];
+    window.addEventListener("load", () => moveNavIndicator(activeLink));
+    window.addEventListener("resize", () => {
+      const current = nav.querySelector(".nav__link.is-active") || navLinks[0];
+      moveNavIndicator(current);
+    });
+
+    navLinks.forEach((link) => {
+      link.addEventListener("mouseenter", () => moveNavIndicator(link));
+      link.addEventListener("click", () => {
+        navLinks.forEach((l) => l.classList.remove("is-active"));
+        link.classList.add("is-active");
+        moveNavIndicator(link);
       });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
-    items.forEach((el) => io.observe(el));
-  } else {
-    items.forEach((el) => el.classList.add('is-in'));
+    });
+
+    nav.addEventListener("mouseleave", () => {
+      const current = nav.querySelector(".nav__link.is-active") || navLinks[0];
+      moveNavIndicator(current);
+    });
+  }
+
+  /* --------------------------------------------------------------------------
+     3. PRELOADER -> CENTER IRIS APERTURE EXPAND HERO REVEAL
+     -------------------------------------------------------------------------- */
+  function initIrisHeroReveal() {
+    const preloader = document.getElementById("preloader");
+    const preloaderWord = document.getElementById("preloader-word");
+    const preloaderBar = document.getElementById("preloader-bar");
+    const heroAperture = document.getElementById("hero-aperture");
+    const heroImg = document.getElementById("hero-bg-img");
+    const heroReveals = document.querySelectorAll(".hero-reveal");
+
+    if (!preloader || !hasGSAP || prefersReducedMotion) {
+      if (preloader) preloader.style.display = "none";
+      return;
+    }
+
+    gsap.set(preloaderWord, { y: 0, yPercent: 112, color: "#141518" });
+    gsap.set(preloaderBar, { scaleX: 0 });
+    gsap.set(heroAperture, {
+      clipPath: "inset(16% 22% 16% 22% round 28px)",
+    });
+    if (heroImg) gsap.set(heroImg, { scale: 1.14 });
+    gsap.set(heroReveals, { y: 24, autoAlpha: 0 });
+
+    const tl = gsap.timeline({
+      defaults: { ease: "power3.out" },
+      onComplete: () => {
+        preloader.style.display = "none";
+        if (hasScrollTrigger) ScrollTrigger.refresh();
+      },
+    });
+
+    tl.to(preloaderWord, {
+      y: 0,
+      yPercent: 0,
+      duration: 0.58,
+    })
+      .to(
+        preloaderBar,
+        {
+          scaleX: 1,
+          duration: 0.52,
+          ease: "power2.inOut",
+        },
+        "-=0.35"
+      )
+      .to(
+        preloader,
+        {
+          autoAlpha: 0,
+          duration: 0.48,
+          ease: "power2.inOut",
+        },
+        "+=0.08"
+      )
+      .to(
+        heroAperture,
+        {
+          clipPath: "inset(0% 0% 0% 0% round 0px)",
+          duration: 0.95,
+          ease: "expo.inOut",
+        },
+        "-=0.42"
+      )
+      .to(
+        heroImg,
+        {
+          scale: 1,
+          duration: 1.15,
+          ease: "power3.out",
+        },
+        "-=0.88"
+      )
+      .to(
+        heroReveals,
+        {
+          y: 0,
+          autoAlpha: 1,
+          duration: 0.65,
+          stagger: 0.08,
+        },
+        "-=0.55"
+      );
+  }
+
+  initIrisHeroReveal();
+
+  /* --------------------------------------------------------------------------
+     4. HERO VITA TONE SWITCHER
+     -------------------------------------------------------------------------- */
+  const vitaSwatches = document.querySelectorAll(".vita-swatch");
+  const heroVitaLabel = document.getElementById("hero-vita-label");
+  const heroBgImg = document.getElementById("hero-bg-img");
+
+  vitaSwatches.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      vitaSwatches.forEach((b) => b.classList.remove("is-active"));
+      btn.classList.add("is-active");
+      const label = btn.getAttribute("data-label");
+      const filter = btn.getAttribute("data-filter");
+      if (heroVitaLabel && label) heroVitaLabel.textContent = label;
+      if (heroBgImg && filter) heroBgImg.style.filter = filter;
+    });
+  });
+
+  /* --------------------------------------------------------------------------
+     5. PINNED HORIZONTAL PANORAMA GALLERY TRACK (#services)
+     -------------------------------------------------------------------------- */
+  function initHorizontalGallery() {
+    if (!hasGSAP || !hasScrollTrigger || prefersReducedMotion) return;
+
+    const pinWrap = document.getElementById("horiz-pin");
+    const track = document.getElementById("horiz-track");
+    const countEl = document.getElementById("horiz-count");
+    const fillEl = document.getElementById("horiz-fill");
+
+    if (!pinWrap || !track) return;
+
+    const mm = gsap.matchMedia();
+    mm.add("(min-width: 1081px)", () => {
+      const getScrollAmount = () => {
+        const viewportWidth = pinWrap.querySelector(".horiz-viewport").clientWidth;
+        return Math.max(0, track.scrollWidth - viewportWidth + 64);
+      };
+
+      gsap.to(track, {
+        x: () => -getScrollAmount(),
+        ease: "none",
+        scrollTrigger: {
+          trigger: pinWrap,
+          pin: true,
+          scrub: 0.45,
+          start: "top top",
+          end: () => `+=${getScrollAmount() + 320}`,
+          invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            const p = self.progress;
+            const idx = Math.min(4, Math.max(1, Math.ceil(p * 4) || 1));
+            if (countEl) countEl.textContent = `0${idx} / 04`;
+            if (fillEl) fillEl.style.width = `${Math.max(25, Math.round(p * 100))}%`;
+          },
+        },
+      });
+    });
+  }
+
+  initHorizontalGallery();
+
+  /* --------------------------------------------------------------------------
+     6. SLIDE-OUT AESTHETIC & WARRANTY PASSPORT (#booking)
+        - Frequent small horizontal steps out of the left spine slot
+        - Scroll-Then-Act (1220ms delay when triggered via .js-pick-service)
+        - Reset-On-Leave (retracts when scrolling away so it replays on return)
+     -------------------------------------------------------------------------- */
+  const PASSPORT_DATA = {
+    "Бесплатный осмотр и подбор оттенка VITA": {
+      code: "VITA #00 · ДИАГНОСТИКА",
+      title: "Бесплатный осмотр и подбор оттенка по шкале VITA",
+      shade: "B1 / A1 VITA",
+      price: "после осмотра врача",
+      steps: [
+        ["01. Первичный осмотр врача и диагностика эмали", "0 ₽"],
+        ["02. Примерка эталонной палитры из 16 оттенков VITA", "0 ₽"],
+        ["03. Составление точного плана и фиксированной сметы", "0 ₽"],
+        ["04. Подбор удобного окна приёма без очередей", "в день визита"],
+      ],
+    },
+    "Коронки из циркония и керамики": {
+      code: "ОРТОПЕДИЯ #01 · ЦИРКОНИЙ",
+      title: "Коронки из диоксида циркония и керамики в тон зубам",
+      shade: "Под родные зубы",
+      price: "от 24 000 ₽",
+      steps: [
+        ["01. Осмотр стоматолога-ортопеда и план протезирования", "0 ₽"],
+        ["02. Точный подбор цвета и прозрачности края по VITA", "0 ₽"],
+        ["03. Временная эстетическая коронка на время изготовления", "по плану"],
+        ["04. Фиксация постоянной коронки с официальной гарантией", "от 24 000 ₽"],
+      ],
+    },
+    "Бережное отбеливание Zoom": {
+      code: "ЭСТЕТИКА #02 · ZOOM",
+      title: "Бережное фотоотбеливание эмали Zoom с защитой дёсен",
+      shade: "Осветление до B1",
+      price: "от 18 000 ₽",
+      steps: [
+        ["01. Осмотр эмали и прогноз будущего оттенка по VITA", "0 ₽"],
+        ["02. Изоляция дёсен защитным гелем перед процедурой", "включено"],
+        ["03. Бережное осветление эмали под контролем врача", "1 визит (60 мин)"],
+        ["04. Укрепляющее фторирование для снятия чувствительности", "включено"],
+      ],
+    },
+    "Профгигиена Air-Flow и ультразвук": {
+      code: "ГИГИЕНА #03 · AIR-FLOW",
+      title: "Комплексная профгигиена Air-Flow, ультразвук и полировка",
+      shade: "Естественный тон",
+      price: "от 4 800 ₽",
+      steps: [
+        ["01. Осмотр полости рта и оценка состояния эмали", "0 ₽"],
+        ["02. Бережное удаление камня ультразвуком без боли", "включено"],
+        ["03. Снятие пигментного налёта от кофе и чая Air-Flow", "включено"],
+        ["04. Полировка эмали и защитное минеральное покрытие", "от 4 800 ₽"],
+      ],
+    },
+    "Лечение кариеса и художественная реставрация": {
+      code: "ТЕРАПИЯ #04 · РЕСТАВРАЦИЯ",
+      title: "Лечение кариеса без боли и художественная реставрация",
+      shade: "Точно в цвет эмали",
+      price: "от 5 200 ₽",
+      steps: [
+        ["01. Первичный осмотр врача-терапевта и план лечения", "0 ₽"],
+        ["02. Мягкая двухэтапная анестезия без боли и стресса", "включено"],
+        ["03. Бережное очищение тканей и послойная реставрация", "1 визит"],
+        ["04. Полировка пломбы под анатомию и цвет родного зуба", "от 5 200 ₽"],
+      ],
+    },
+  };
+
+  const passportEl = document.getElementById("aesthetic-passport");
+  const passportCode = document.getElementById("passport-code");
+  const passportTitle = document.getElementById("passport-title");
+  const passportShade = document.getElementById("passport-shade");
+  const passportSteps = document.getElementById("passport-steps");
+  const passportPrice = document.getElementById("passport-price");
+  const passportTabs = document.querySelectorAll(".passport-tab");
+  const serviceSelect = document.getElementById("inp-service");
+  const serviceHint = document.getElementById("service-picked-hint");
+
+  let passportTl = null;
+  let isPassportVisible = false;
+
+  function renderPassportContent(serviceKey) {
+    const data = PASSPORT_DATA[serviceKey] || PASSPORT_DATA["Бесплатный осмотр и подбор оттенка VITA"];
+    if (passportCode) passportCode.textContent = data.code;
+    if (passportTitle) passportTitle.textContent = data.title;
+    if (passportShade) passportShade.textContent = data.shade;
+    if (passportPrice) passportPrice.textContent = data.price;
+    if (passportSteps) {
+      passportSteps.innerHTML = data.steps
+        .map(([name, val]) => `<li><span>${name}</span><strong>${val}</strong></li>`)
+        .join("");
+    }
+  }
+
+  function playPassportSlideIn(serviceKey) {
+    if (serviceKey) renderPassportContent(serviceKey);
+    if (!passportEl || !hasGSAP || prefersReducedMotion) {
+      isPassportVisible = true;
+      return;
+    }
+
+    if (passportTl) passportTl.kill();
+
+    gsap.set(passportEl, {
+      xPercent: -96,
+      x: 0,
+      y: 0,
+      rotation: 0,
+      autoAlpha: 1,
+    });
+
+    const steps = [-84, -72, -60, -48, -36, -24, -14, -6, 0];
+    passportTl = gsap.timeline({
+      onComplete: () => {
+        isPassportVisible = true;
+      },
+    });
+
+    steps.forEach((pct) => {
+      passportTl.to(passportEl, {
+        xPercent: pct,
+        x: 0,
+        y: 0,
+        rotation: 0,
+        duration: 0.055,
+        ease: "power2.out",
+      });
+      if (pct !== 0) {
+        passportTl.to(passportEl, { duration: 0.032 });
+      }
+    });
+  }
+
+  function playPassportRetractOut() {
+    if (!passportEl || !hasGSAP || prefersReducedMotion) return;
+    if (passportTl) passportTl.kill();
+
+    const retractSteps = [-18, -42, -68, -96];
+    passportTl = gsap.timeline({
+      onComplete: () => {
+        isPassportVisible = false;
+      },
+    });
+
+    retractSteps.forEach((pct) => {
+      passportTl.to(passportEl, {
+        xPercent: pct,
+        x: 0,
+        y: 0,
+        rotation: 0,
+        duration: 0.048,
+        ease: "power2.in",
+      });
+    });
+  }
+
+  if (passportEl && hasGSAP && hasScrollTrigger && !prefersReducedMotion) {
+    gsap.set(passportEl, { xPercent: -96, autoAlpha: 1 });
+
+    ScrollTrigger.create({
+      trigger: "#booking",
+      start: "top 68%",
+      end: "bottom 18%",
+      onEnter: () => {
+        if (!isPassportVisible) playPassportSlideIn();
+      },
+      onEnterBack: () => {
+        if (!isPassportVisible) playPassportSlideIn();
+      },
+      onLeave: () => {
+        playPassportRetractOut();
+      },
+      onLeaveBack: () => {
+        playPassportRetractOut();
+      },
+    });
+  }
+
+  function selectServiceAndAnimate(serviceKey, scrollFirst = false) {
+    passportTabs.forEach((tab) => {
+      const match = tab.getAttribute("data-passport-service") === serviceKey;
+      tab.classList.toggle("is-active", match);
+    });
+
+    if (serviceSelect) {
+      const options = Array.from(serviceSelect.options);
+      const found = options.find((opt) => opt.value === serviceKey);
+      if (found) serviceSelect.value = serviceKey;
+    }
+
+    if (serviceHint) {
+      serviceHint.textContent = `Выбрано: «${serviceKey}». Первичный осмотр и подбор тона VITA — 0 ₽.`;
+    }
+
+    if (scrollFirst) {
+      if (passportEl && hasGSAP && !prefersReducedMotion) {
+        if (passportTl) passportTl.kill();
+        gsap.set(passportEl, { xPercent: -96 });
+        isPassportVisible = false;
+      }
+      smoothScrollTo("#booking", -72);
+      setTimeout(() => {
+        playPassportSlideIn(serviceKey);
+      }, 1220);
+    } else {
+      playPassportSlideIn(serviceKey);
+    }
+  }
+
+  passportTabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const serviceKey = tab.getAttribute("data-passport-service");
+      if (serviceKey) selectServiceAndAnimate(serviceKey, false);
+    });
+  });
+
+  document.querySelectorAll(".js-pick-service").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const serviceKey = btn.getAttribute("data-service");
+      if (serviceKey) selectServiceAndAnimate(serviceKey, true);
+    });
+  });
+
+  if (serviceSelect) {
+    serviceSelect.addEventListener("change", () => {
+      const val = serviceSelect.value;
+      if (PASSPORT_DATA[val]) {
+        selectServiceAndAnimate(val, false);
+      }
+    });
+  }
+
+  /* --------------------------------------------------------------------------
+     7. BOOKING FORM VALIDATION & FEEDBACK
+     -------------------------------------------------------------------------- */
+  const bookingForm = document.getElementById("booking-form");
+  const formFeedback = document.getElementById("form-feedback");
+
+  if (bookingForm && formFeedback) {
+    bookingForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const nameInput = document.getElementById("inp-name");
+      const phoneInput = document.getElementById("inp-phone");
+      const nameVal = nameInput ? nameInput.value.trim() : "";
+      const phoneVal = phoneInput ? phoneInput.value.trim() : "";
+
+      if (nameVal.length < 2 || phoneVal.replace(/\D/g, "").length < 10) {
+        formFeedback.hidden = false;
+        formFeedback.style.background = "rgba(217, 83, 56, 0.12)";
+        formFeedback.style.borderColor = "rgba(217, 83, 56, 0.35)";
+        formFeedback.style.color = "#A3321B";
+        formFeedback.textContent = "Пожалуйста, укажите ваше имя и контактный номер телефона.";
+        return;
+      }
+
+      formFeedback.hidden = false;
+      formFeedback.style.background = "rgba(34, 160, 107, 0.12)";
+      formFeedback.style.borderColor = "rgba(34, 160, 107, 0.3)";
+      formFeedback.style.color = "#146341";
+      formFeedback.textContent = `Спасибо, ${nameVal}! Это демо-концепт: в рабочей версии администратор «Смайл» свяжется с вами по номеру ${phoneVal} для подтверждения окна.`;
+      bookingForm.reset();
+    });
   }
 })();
