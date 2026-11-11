@@ -472,19 +472,19 @@
       </div>
     </section>
 
-    <!-- 6. SIGNATURE INTERACTIVE TOY: SLIDE-OUT AESTHETIC & WARRANTY PASSPORT + BOOKING FORM -->
+    <!-- 6. SIGNATURE INTERACTIVE TOY: THERMAL AESTHETIC & VITA RECEIPT DISPENSER + BOOKING FORM -->
     <section class="booking-section" id="booking" aria-labelledby="booking-title">
       <div class="container">
         <div class="booking-header">
-          <span class="section-kicker">ПАСПОРТ ЭСТЕТИКИ И ЗАПИСЬ · ПЕРВЫЙ ВИЗИТ 0 ₽</span>
-          <h2 class="section-title" id="booking-title">Выберите процедуру и получите <span class="title-accent">паспорт эстетики и смету</span></h2>
+          <span class="section-kicker">ПРОЗРАЧНЫЙ РАСЧЁТ И ПАСПОРТ VITA · ПЕРВЫЙ ВИЗИТ 0 ₽</span>
+          <h2 class="section-title" id="booking-title">Выберите процедуру и получите <span class="title-accent">честную смету и тон VITA</span></h2>
         </div>
 
-        <!-- Service Switcher Pills for the Slide-Out Passport -->
-        <div class="passport-tabs" id="passport-tabs" role="tablist" aria-label="Выберите услугу для паспорта эстетики">
+        <!-- Service Switcher Pills for the Receipt -->
+        <div class="passport-tabs" id="passport-tabs" role="tablist" aria-label="Выберите услугу для предварительного чека">
           <button type="button" class="passport-tab is-active" data-passport-service="Бесплатный осмотр и подбор оттенка VITA">
             <span>00 · Осмотр и подбор VITA</span>
-            <strong>0 ₽</strong>
+            <strong>0 ₽ · процедуры от 4 800 ₽</strong>
           </button>
           <button type="button" class="passport-tab" data-passport-service="Коронки из циркония и керамики">
             <span>01 · Коронки (цирконий / керамика)</span>
@@ -502,40 +502,60 @@
             <span>04 · Лечение и реставрация</span>
             <strong>от 5 200 ₽</strong>
           </button>
+          <button type="button" class="passport-tab" data-passport-service="Съёмное протезирование / починка протеза">
+            <span>05 · Съёмные протезы / починка</span>
+            <strong>от 14 500 ₽</strong>
+          </button>
         </div>
 
         <div class="booking-grid">
-          <!-- LEFT: Slide-Out Aesthetic & Warranty Passport Dock -->
-          <div class="passport-dock" id="passport-dock">
-            <div class="passport-dock__spine" aria-hidden="true">
-              <span class="passport-dock__spine-label">SMILE® · СЕРТИФИКАТ</span>
-              <div class="passport-dock__slot"></div>
+          <!-- LEFT: Interactive Thermal-Printer Aesthetic Receipt Dispenser -->
+          <div class="receipt-dispenser" id="passport-dock">
+            <div class="receipt-dispenser__cap">
+              <div class="receipt-dispenser__cap-top">
+                <span class="receipt-dispenser__led"><span class="pulse-dot"></span> ТЕРМИНАЛ СМЕТЫ И ТОНА VITA · SMILE®</span>
+                <span class="receipt-dispenser__hint">Выберите процедуру выше</span>
+              </div>
+              <div class="receipt-dispenser__slot-lip" aria-hidden="true"></div>
             </div>
 
-            <div class="passport-dock__viewport">
-              <article class="passport-card" id="aesthetic-passport" aria-live="polite">
-                <div class="passport-card__top">
-                  <div>
-                    <span class="passport-card__kicker">ПАСПОРТ ЭСТЕТИКИ И ГАРАНТИИ</span>
-                    <strong class="passport-card__clinic">СТОМАТОЛОГИЯ «СМАЙЛ» · 13 МКР, 42</strong>
-                  </div>
-                  <span class="passport-card__badge" id="passport-code">VITA #00 · ДИАГНОСТИКА</span>
+            <div class="receipt-dispenser__viewport">
+              <article class="receipt-card" id="aesthetic-passport" aria-live="polite">
+                <div class="receipt-card__header-center">
+                  <span class="receipt-card__kassa">ПРЕДВАРИТЕЛЬНЫЙ ЛИСТ РАСЧЁТА · ПАСПОРТ ЭСТЕТИКИ VITA</span>
+                  <strong class="receipt-card__title">СТОМАТОЛОГИЯ «СМАЙЛ»</strong>
+                  <span class="receipt-card__addr">г. Нефтеюганск, 13-й мкр, д. 42 (1 этаж) · тел. +7 (3463) 20-06-77</span>
                 </div>
 
-                <div class="passport-card__divider" aria-hidden="true"></div>
+                <div class="receipt-card__double-dash" aria-hidden="true"></div>
 
-                <div class="passport-card__subject">
-                  <div class="passport-card__subject-main">
-                    <span class="passport-card__label">ВЫБРАННАЯ ПРОЦЕДУРА:</span>
-                    <h3 class="passport-card__service" id="passport-title">Бесплатный осмотр и подбор оттенка по шкале VITA</h3>
+                <div class="receipt-card__meta">
+                  <span>ДОКУМЕНТ: <strong id="passport-code">VITA #00 · ДИАГНОСТИКА</strong></span>
+                  <span>КАБИНЕТ: <strong id="passport-cabinet">ЭСТЕТИКА И ОРТОПЕДИЯ</strong></span>
+                </div>
+
+                <div class="receipt-card__double-dash" aria-hidden="true"></div>
+
+                <div class="receipt-card__subject">
+                  <div class="receipt-card__subject-main">
+                    <span class="receipt-card__label">ВЫБРАННАЯ ПРОЦЕДУРА:</span>
+                    <h3 class="receipt-card__service" id="passport-title">Бесплатный осмотр и подбор оттенка по шкале VITA</h3>
                   </div>
-                  <div class="passport-card__shade-box">
-                    <span class="passport-card__shade-label">ЦЕЛЕВОЙ ТОН</span>
-                    <strong class="passport-card__shade-val" id="passport-shade">B1 / A1 VITA</strong>
+                  <div class="receipt-card__shade-box">
+                    <span class="receipt-card__shade-swatch" id="passport-swatch" style="background: #F7F5EE;"></span>
+                    <div class="receipt-card__shade-meta">
+                      <span class="receipt-card__shade-label">ЦЕЛЕВОЙ ТОН</span>
+                      <strong class="receipt-card__shade-val" id="passport-shade">B1 / A1 VITA</strong>
+                    </div>
                   </div>
                 </div>
 
-                <ul class="passport-card__steps" id="passport-steps">
+                <div class="receipt-card__cols-head" aria-hidden="true">
+                  <span>СОСТАВ ПРОЦЕДУРЫ И ЭТАПЫ</span>
+                  <span>ОРИЕНТИР ЦЕНЫ</span>
+                </div>
+
+                <ul class="receipt-card__lines" id="passport-steps">
                   <li>
                     <span>01. Первичный осмотр врача и диагностика эмали</span>
                     <strong>0 ₽</strong>
@@ -545,32 +565,37 @@
                     <strong>0 ₽</strong>
                   </li>
                   <li>
-                    <span>03. Составление точного плана и фиксированной сметы</span>
-                    <strong>0 ₽</strong>
+                    <span>03. Ориентир: чистка Air-Flow / световая реставрация</span>
+                    <strong>от 4 800 ₽</strong>
                   </li>
                   <li>
-                    <span>04. Подбор удобного окна приёма без очередей</span>
-                    <strong>в день визита</strong>
+                    <span>04. Ориентир: отбеливание Zoom / коронки из циркония</span>
+                    <strong>от 18 000 ₽</strong>
                   </li>
                 </ul>
 
-                <div class="passport-card__divider" aria-hidden="true"></div>
+                <div class="receipt-card__double-dash" aria-hidden="true"></div>
 
-                <div class="passport-card__totals">
-                  <div class="passport-card__total-row passport-card__total-row--free">
-                    <span>СТОИМОСТЬ ПЕРВОГО ОСМОТРА И ПОДБОРА VITA</span>
+                <div class="receipt-card__totals">
+                  <div class="receipt-card__total-row receipt-card__total-row--free">
+                    <span>К ОПЛАТЕ ЗА ПЕРВИЧНЫЙ ОСМОТР И ПОДБОР VITA</span>
                     <strong>0 ₽</strong>
                   </div>
-                  <div class="passport-card__total-row">
+                  <div class="receipt-card__total-row receipt-card__total-row--est">
                     <span>ОРИЕНТИР ПО ВЫБРАННОЙ ПРОЦЕДУРЕ</span>
-                    <strong id="passport-price">после осмотра врача</strong>
+                    <strong id="passport-price">от 4 800 ₽ (после осмотра)</strong>
                   </div>
                 </div>
 
-                <div class="passport-card__footer">
-                  <div class="passport-card__stamp">ГАРАНТИЯ ДОЛГОВЕЧНОСТИ И ТОЧНОЙ ЦЕНЫ В ДОГОВОРЕ</div>
-                  <span class="passport-card__serial">SML-86-NEFT-13MKR-42 · ТЕЛ. +7 (3463) 20-06-77</span>
+                <div class="receipt-card__double-dash" aria-hidden="true"></div>
+
+                <div class="receipt-card__footer-block">
+                  <div class="receipt-card__stamp">ТОЧНАЯ ЦЕНА И ОТТЕНОК VITA ФИКСИРУЮТСЯ В ДОГОВОРЕ</div>
+                  <div class="receipt-card__barcode" aria-hidden="true"></div>
+                  <span class="receipt-card__serial">SML-86-NEFT-13MKR-42 · ТЕЛ. +7 (3463) 20-06-77 · ГАРАНТИЯ</span>
                 </div>
+
+                <div class="receipt-card__sawtooth" aria-hidden="true"></div>
               </article>
             </div>
           </div>

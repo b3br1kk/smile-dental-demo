@@ -328,78 +328,106 @@
   initHorizontalGallery();
 
   /* --------------------------------------------------------------------------
-     6. SLIDE-OUT AESTHETIC & WARRANTY PASSPORT (#booking)
-        - Frequent small horizontal steps out of the left spine slot
+     6. THERMAL AESTHETIC & VITA RECEIPT DISPENSER (#booking)
+        - Full PASSPORT_DATA with concrete ₽ price orientirs for all 6 options
+        - Frequent 12-step vertical thermal printer feed-out from .receipt-dispenser__slot-lip
         - Scroll-Then-Act (1220ms delay when triggered via .js-pick-service)
+        - Strict lock (isJumpingToBooking + isPassportAnimating) so it NEVER plays twice!
         - Reset-On-Leave (retracts when scrolling away so it replays on return)
      -------------------------------------------------------------------------- */
   const PASSPORT_DATA = {
     "Бесплатный осмотр и подбор оттенка VITA": {
       code: "VITA #00 · ДИАГНОСТИКА",
+      cabinet: "ЭСТЕТИКА И ОРТОПЕДИЯ",
       title: "Бесплатный осмотр и подбор оттенка по шкале VITA",
       shade: "B1 / A1 VITA",
-      price: "после осмотра врача",
+      swatch: "#F7F5EE",
+      price: "от 4 800 ₽ (после осмотра)",
       steps: [
         ["01. Первичный осмотр врача и диагностика эмали", "0 ₽"],
         ["02. Примерка эталонной палитры из 16 оттенков VITA", "0 ₽"],
-        ["03. Составление точного плана и фиксированной сметы", "0 ₽"],
-        ["04. Подбор удобного окна приёма без очередей", "в день визита"],
+        ["03. Ориентир: чистка Air-Flow / световая реставрация", "от 4 800 ₽"],
+        ["04. Ориентир: отбеливание Zoom / коронки из циркония", "от 18 000 ₽"],
       ],
     },
     "Коронки из циркония и керамики": {
       code: "ОРТОПЕДИЯ #01 · ЦИРКОНИЙ",
+      cabinet: "ОРТОПЕДИЯ · КАБ. №1",
       title: "Коронки из диоксида циркония и керамики в тон зубам",
-      shade: "Под родные зубы",
+      shade: "A1 / A2 VITA",
+      swatch: "#F3EFE4",
       price: "от 24 000 ₽",
       steps: [
         ["01. Осмотр стоматолога-ортопеда и план протезирования", "0 ₽"],
         ["02. Точный подбор цвета и прозрачности края по VITA", "0 ₽"],
-        ["03. Временная эстетическая коронка на время изготовления", "по плану"],
-        ["04. Фиксация постоянной коронки с официальной гарантией", "от 24 000 ₽"],
+        ["03. Временная эстетическая коронка на время изготовления", "от 3 500 ₽"],
+        ["04. Постоянная коронка из циркония / керамики под ключ", "от 24 000 ₽"],
       ],
     },
     "Бережное отбеливание Zoom": {
       code: "ЭСТЕТИКА #02 · ZOOM",
+      cabinet: "ЭСТЕТИКА · КАБ. №2",
       title: "Бережное фотоотбеливание эмали Zoom с защитой дёсен",
-      shade: "Осветление до B1",
+      shade: "BL2 / B1 VITA",
+      swatch: "#FDFCF8",
       price: "от 18 000 ₽",
       steps: [
         ["01. Осмотр эмали и прогноз будущего оттенка по VITA", "0 ₽"],
         ["02. Изоляция дёсен защитным гелем перед процедурой", "включено"],
-        ["03. Бережное осветление эмали под контролем врача", "1 визит (60 мин)"],
-        ["04. Укрепляющее фторирование для снятия чувствительности", "включено"],
+        ["03. Осветление эмали на 4–8 тонов за 1 визит (60 мин)", "от 18 000 ₽"],
+        ["04. Глубокое фторирование для снятия чувствительности", "включено"],
       ],
     },
     "Профгигиена Air-Flow и ультразвук": {
       code: "ГИГИЕНА #03 · AIR-FLOW",
+      cabinet: "ГИГИЕНА И ПРОФИЛАКТИКА",
       title: "Комплексная профгигиена Air-Flow, ультразвук и полировка",
-      shade: "Естественный тон",
+      shade: "Природный тон",
+      swatch: "#EFEAD8",
       price: "от 4 800 ₽",
       steps: [
         ["01. Осмотр полости рта и оценка состояния эмали", "0 ₽"],
-        ["02. Бережное удаление камня ультразвуком без боли", "включено"],
-        ["03. Снятие пигментного налёта от кофе и чая Air-Flow", "включено"],
-        ["04. Полировка эмали и защитное минеральное покрытие", "от 4 800 ₽"],
+        ["02. Бережное снятие зубного камня ультразвуком", "включено"],
+        ["03. Снятие пигментного налёта Air-Flow + полировка", "от 4 800 ₽"],
+        ["04. Защитное укрепляющее покрытие фторлаком", "включено"],
       ],
     },
     "Лечение кариеса и художественная реставрация": {
       code: "ТЕРАПИЯ #04 · РЕСТАВРАЦИЯ",
+      cabinet: "ТЕРАПИЯ · КАБ. №1",
       title: "Лечение кариеса без боли и художественная реставрация",
-      shade: "Точно в цвет эмали",
+      shade: "A2 / A3 VITA",
+      swatch: "#ECE5D0",
       price: "от 5 200 ₽",
       steps: [
         ["01. Первичный осмотр врача-терапевта и план лечения", "0 ₽"],
-        ["02. Мягкая двухэтапная анестезия без боли и стресса", "включено"],
-        ["03. Бережное очищение тканей и послойная реставрация", "1 визит"],
-        ["04. Полировка пломбы под анатомию и цвет родного зуба", "от 5 200 ₽"],
+        ["02. Мягкая двухэтапная анестезия без боли и стресса", "от 650 ₽"],
+        ["03. Художественная световая реставрация точно в цвет зуба", "от 5 200 ₽"],
+        ["04. Многоступенчатая полировка до зеркального блеска", "включено"],
+      ],
+    },
+    "Съёмное протезирование / починка протеза": {
+      code: "ОРТОПЕДИЯ #05 · ПРОТЕЗЫ",
+      cabinet: "ОРТОПЕДИЯ · КАБ. №1",
+      title: "Современные съёмные и бюгельные протезы · бережная починка",
+      shade: "A2 / A3 VITA",
+      swatch: "#ECE5D0",
+      price: "от 14 500 ₽",
+      steps: [
+        ["01. Консультация стоматолога-ортопеда и диагностика", "0 ₽"],
+        ["02. Бережная починка или перебазировка протеза", "от 3 800 ₽"],
+        ["03. Изготовление удобного съёмного / бюгельного протеза", "от 14 500 ₽"],
+        ["04. Индивидуальная подгонка для мягкой посадки", "включено"],
       ],
     },
   };
 
   const passportEl = document.getElementById("aesthetic-passport");
   const passportCode = document.getElementById("passport-code");
+  const passportCabinet = document.getElementById("passport-cabinet");
   const passportTitle = document.getElementById("passport-title");
   const passportShade = document.getElementById("passport-shade");
+  const passportSwatch = document.getElementById("passport-swatch");
   const passportSteps = document.getElementById("passport-steps");
   const passportPrice = document.getElementById("passport-price");
   const passportTabs = document.querySelectorAll(".passport-tab");
@@ -408,56 +436,74 @@
 
   let passportTl = null;
   let isPassportVisible = false;
+  let isPassportAnimating = false;
   let isJumpingToBooking = false;
+  let jumpTimeoutId = null;
 
   function renderPassportContent(serviceKey) {
-    const data = PASSPORT_DATA[serviceKey] || PASSPORT_DATA["Бесплатный осмотр и подбор оттенка VITA"];
+    const key =
+      serviceKey && PASSPORT_DATA[serviceKey]
+        ? serviceKey
+        : "Бесплатный осмотр и подбор оттенка VITA";
+    const data = PASSPORT_DATA[key];
     if (passportCode) passportCode.textContent = data.code;
+    if (passportCabinet) passportCabinet.textContent = data.cabinet;
     if (passportTitle) passportTitle.textContent = data.title;
     if (passportShade) passportShade.textContent = data.shade;
+    if (passportSwatch && data.swatch) passportSwatch.style.background = data.swatch;
     if (passportPrice) passportPrice.textContent = data.price;
     if (passportSteps) {
       passportSteps.innerHTML = data.steps
         .map(([name, val]) => `<li><span>${name}</span><strong>${val}</strong></li>`)
         .join("");
     }
+    passportTabs.forEach((tab) => {
+      const match = tab.getAttribute("data-passport-service") === key;
+      tab.classList.toggle("is-active", match);
+    });
   }
 
   function playPassportSlideIn(serviceKey) {
     if (serviceKey) renderPassportContent(serviceKey);
     if (!passportEl || !hasGSAP || prefersReducedMotion) {
       isPassportVisible = true;
+      isPassportAnimating = false;
       return;
     }
 
     if (passportTl) passportTl.kill();
+    isPassportAnimating = true;
 
     gsap.set(passportEl, {
-      xPercent: -96,
+      yPercent: -104,
+      xPercent: 0,
       x: 0,
       y: 0,
       rotation: 0,
       autoAlpha: 1,
     });
 
-    const steps = [-84, -72, -60, -48, -36, -24, -14, -6, 0];
+    const feedSteps = [-94, -85, -76, -67, -58, -49, -40, -31, -22, -14, -6, 0];
     passportTl = gsap.timeline({
       onComplete: () => {
         isPassportVisible = true;
+        isPassportAnimating = false;
       },
     });
 
-    steps.forEach((pct) => {
+    feedSteps.forEach((pct, idx) => {
+      const isLast = idx === feedSteps.length - 1;
       passportTl.to(passportEl, {
-        xPercent: pct,
+        yPercent: pct,
+        xPercent: 0,
         x: 0,
         y: 0,
         rotation: 0,
-        duration: 0.055,
-        ease: "power2.out",
+        duration: isLast ? 0.12 : 0.062,
+        ease: isLast ? "power3.out" : "power2.out",
       });
-      if (pct !== 0) {
-        passportTl.to(passportEl, { duration: 0.032 });
+      if (!isLast) {
+        passportTl.to(passportEl, { duration: 0.038 });
       }
     });
   }
@@ -465,8 +511,9 @@
   function playPassportRetractOut() {
     if (!passportEl || !hasGSAP || prefersReducedMotion) return;
     if (passportTl) passportTl.kill();
+    isPassportAnimating = false;
 
-    const retractSteps = [-18, -42, -68, -96];
+    const retractSteps = [-15, -32, -50, -68, -86, -104];
     passportTl = gsap.timeline({
       onComplete: () => {
         isPassportVisible = false;
@@ -475,7 +522,8 @@
 
     retractSteps.forEach((pct) => {
       passportTl.to(passportEl, {
-        xPercent: pct,
+        yPercent: pct,
+        xPercent: 0,
         x: 0,
         y: 0,
         rotation: 0,
@@ -486,17 +534,21 @@
   }
 
   if (passportEl && hasGSAP && hasScrollTrigger && !prefersReducedMotion) {
-    gsap.set(passportEl, { xPercent: -96, autoAlpha: 1 });
+    gsap.set(passportEl, { yPercent: -104, xPercent: 0, autoAlpha: 1 });
 
     ScrollTrigger.create({
       trigger: "#booking",
       start: "top 68%",
       end: "bottom 18%",
       onEnter: () => {
-        if (!isPassportVisible && !isJumpingToBooking) playPassportSlideIn();
+        if (!isPassportVisible && !isPassportAnimating && !isJumpingToBooking) {
+          playPassportSlideIn();
+        }
       },
       onEnterBack: () => {
-        if (!isPassportVisible && !isJumpingToBooking) playPassportSlideIn();
+        if (!isPassportVisible && !isPassportAnimating && !isJumpingToBooking) {
+          playPassportSlideIn();
+        }
       },
       onLeave: () => {
         if (!isJumpingToBooking) playPassportRetractOut();
@@ -508,10 +560,7 @@
   }
 
   function selectServiceAndAnimate(serviceKey, scrollFirst = false) {
-    passportTabs.forEach((tab) => {
-      const match = tab.getAttribute("data-passport-service") === serviceKey;
-      tab.classList.toggle("is-active", match);
-    });
+    renderPassportContent(serviceKey);
 
     if (serviceSelect) {
       let matched = false;
@@ -523,21 +572,25 @@
       if (matched) serviceSelect.value = serviceKey;
     }
 
+    const catEntry = PASSPORT_DATA[serviceKey];
     if (serviceHint) {
-      serviceHint.textContent = `Выбрано: «${serviceKey}». Первичный осмотр и подбор тона VITA — 0 ₽.`;
+      serviceHint.textContent = catEntry
+        ? `Выбрано: «${serviceKey}» (ориентир: ${catEntry.price}). Первичный осмотр и подбор тона VITA — 0 ₽.`
+        : `Выбрано: «${serviceKey}». Первичный осмотр и подбор тона VITA — 0 ₽.`;
     }
 
     if (scrollFirst) {
       isJumpingToBooking = true;
-      renderPassportContent(serviceKey);
+      if (jumpTimeoutId) clearTimeout(jumpTimeoutId);
       if (passportEl && hasGSAP && !prefersReducedMotion) {
         if (passportTl) passportTl.kill();
-        gsap.set(passportEl, { xPercent: -96 });
+        gsap.set(passportEl, { yPercent: -104, xPercent: 0 });
         isPassportVisible = false;
+        isPassportAnimating = false;
       }
       // Scroll 1 mouse wheel notch lower (+54px offset) so the passport & form are framed right in front of the user
       smoothScrollTo("#booking", 54);
-      setTimeout(() => {
+      jumpTimeoutId = setTimeout(() => {
         isJumpingToBooking = false;
         playPassportSlideIn(serviceKey);
       }, 1220);
