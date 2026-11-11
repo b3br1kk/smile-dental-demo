@@ -111,91 +111,143 @@
   }
 
   /* --------------------------------------------------------------------------
-     3. PRELOADER -> CENTER IRIS APERTURE EXPAND HERO REVEAL
+     3. PRELOADER -> 4-PART SIMULTANEOUS HORIZONTAL CURTAIN & WORDMARK HANDOFF
      -------------------------------------------------------------------------- */
-  function initIrisHeroReveal() {
+  function initHorizontalCurtainReveal() {
     const preloader = document.getElementById("preloader");
-    const preloaderWord = document.getElementById("preloader-word");
-    const preloaderBar = document.getElementById("preloader-bar");
+    const parts = preloader ? Array.from(preloader.querySelectorAll(".preloader__part")) : [];
+    const masks = preloader ? Array.from(preloader.querySelectorAll(".preloader__mask")) : [];
+    const words = preloader ? Array.from(preloader.querySelectorAll(".preloader__word")) : [];
+    const heroTitle = document.getElementById("hero-title");
     const heroAperture = document.getElementById("hero-aperture");
-    const heroImg = document.getElementById("hero-bg-img");
     const heroReveals = document.querySelectorAll(".hero-reveal");
 
-    if (!preloader || !hasGSAP || prefersReducedMotion) {
-      if (preloader) preloader.style.display = "none";
+    if (!preloader || !parts.length || !heroTitle || !hasGSAP || prefersReducedMotion || window.scrollY > 80) {
+      if (preloader) preloader.classList.add("is-hidden");
       return;
     }
 
-    gsap.set(preloaderWord, { y: 0, yPercent: 112, color: "#141518" });
-    gsap.set(preloaderBar, { scaleX: 0 });
-    gsap.set(heroAperture, {
-      clipPath: "inset(16% 22% 16% 22% round 28px)",
+    const heroRect = heroTitle.getBoundingClientRect();
+    const startOffsetX = Math.round(
+      Math.max(0, (window.innerWidth - heroRect.width) * 0.45 - heroRect.left)
+    );
+    const startOffsetY = Math.round(
+      (window.innerHeight - heroRect.height) * 0.52 - heroRect.top
+    );
+
+    const startClips = [
+      "inset(0% 74.8% 0% 0%)",
+      "inset(0% 49.8% 0% 25%)",
+      "inset(0% 24.8% 0% 50%)",
+      "inset(0% 0% 0% 75%)",
+    ];
+    const endClips = [
+      "inset(0% 100% 0% 0%)",
+      "inset(0% 75% 0% 25%)",
+      "inset(0% 50% 0% 50%)",
+      "inset(0% 25% 0% 75%)",
+    ];
+
+    parts.forEach((part, idx) => {
+      gsap.set(part, { clipPath: startClips[idx] });
     });
-    if (heroImg) gsap.set(heroImg, { scale: 1.14 });
-    gsap.set(heroReveals, { y: 24, autoAlpha: 0 });
+
+    gsap.set(masks, {
+      left: heroRect.left + startOffsetX,
+      top: heroRect.top + startOffsetY,
+      x: 0,
+      y: 0,
+      opacity: 1,
+    });
+    gsap.set(words, { y: 0, yPercent: 112, color: "#141518" });
+    gsap.set(heroTitle, { x: startOffsetX, y: startOffsetY });
+    gsap.set(heroReveals, { y: 26, autoAlpha: 0 });
+    if (heroAperture) {
+      gsap.set(heroAperture, { xPercent: 8, scale: 1.06 });
+    }
 
     const tl = gsap.timeline({
-      defaults: { ease: "power3.out" },
       onComplete: () => {
-        preloader.style.display = "none";
+        gsap.set(heroTitle, { clearProps: "transform" });
+        if (heroAperture) gsap.set(heroAperture, { clearProps: "transform" });
+        preloader.classList.add("is-hidden");
         if (hasScrollTrigger) ScrollTrigger.refresh();
       },
     });
 
-    tl.to(preloaderWord, {
-      y: 0,
-      yPercent: 0,
-      duration: 0.58,
-    })
-      .to(
-        preloaderBar,
+    // Beat 1: Dark wordmark rises out of baseline mask in the center of the loading screen
+    tl.to(
+      words,
+      {
+        y: 0,
+        yPercent: 0,
+        duration: 0.62,
+        ease: "power4.out",
+      },
+      0.05
+    );
+
+    // Beat 2: All 4 vertical parts simultaneously wipe horizontally while wordmark glides into Hero & slices Dark -> White
+    parts.forEach((part, idx) => {
+      tl.to(
+        part,
         {
-          scaleX: 1,
-          duration: 0.52,
-          ease: "power2.inOut",
-        },
-        "-=0.35"
-      )
-      .to(
-        preloader,
-        {
-          autoAlpha: 0,
-          duration: 0.48,
-          ease: "power2.inOut",
-        },
-        "+=0.08"
-      )
-      .to(
-        heroAperture,
-        {
-          clipPath: "inset(0% 0% 0% 0% round 0px)",
-          duration: 0.95,
+          clipPath: endClips[idx],
+          duration: 0.94,
           ease: "expo.inOut",
         },
-        "-=0.42"
-      )
-      .to(
-        heroImg,
-        {
-          scale: 1,
-          duration: 1.15,
-          ease: "power3.out",
-        },
-        "-=0.88"
-      )
-      .to(
-        heroReveals,
-        {
-          y: 0,
-          autoAlpha: 1,
-          duration: 0.65,
-          stagger: 0.08,
-        },
-        "-=0.55"
+        0.72
       );
+    });
+
+    tl.to(
+      masks,
+      {
+        x: -startOffsetX,
+        y: -startOffsetY,
+        duration: 0.94,
+        ease: "expo.inOut",
+      },
+      0.72
+    ).to(
+      heroTitle,
+      {
+        x: 0,
+        y: 0,
+        duration: 0.94,
+        ease: "expo.inOut",
+      },
+      0.72
+    );
+
+    if (heroAperture) {
+      tl.to(
+        heroAperture,
+        {
+          xPercent: 0,
+          scale: 1,
+          duration: 0.94,
+          ease: "expo.inOut",
+        },
+        0.72
+      );
+    }
+
+    // Beat 3: Hero UI elements rise smoothly after horizontal curtains open
+    tl.to(
+      heroReveals,
+      {
+        y: 0,
+        autoAlpha: 1,
+        duration: 0.58,
+        stagger: 0.06,
+        ease: "power3.out",
+      },
+      1.38
+    );
   }
 
-  initIrisHeroReveal();
+  initHorizontalCurtainReveal();
 
   /* --------------------------------------------------------------------------
      4. HERO VITA TONE SWITCHER
@@ -217,6 +269,9 @@
 
   /* --------------------------------------------------------------------------
      5. PINNED HORIZONTAL PANORAMA GALLERY TRACK (#services)
+        - Initial dwell buffer (0.00 -> 0.22) so user calmly reads Card 01 first
+        - Exact width math accounting for container padding so Card 04 is never clipped
+        - Final dwell buffer (0.82 -> 1.00) so Card 04 stays readable before unpin
      -------------------------------------------------------------------------- */
   function initHorizontalGallery() {
     if (!hasGSAP || !hasScrollTrigger || prefersReducedMotion) return;
@@ -231,28 +286,42 @@
     const mm = gsap.matchMedia();
     mm.add("(min-width: 1081px)", () => {
       const getScrollAmount = () => {
-        const viewportWidth = pinWrap.querySelector(".horiz-viewport").clientWidth;
-        return Math.max(0, track.scrollWidth - viewportWidth + 64);
+        const viewportEl = pinWrap.querySelector(".horiz-viewport");
+        if (!viewportEl) return 0;
+        const style = window.getComputedStyle(viewportEl);
+        const padLeft = parseFloat(style.paddingLeft) || 0;
+        const padRight = parseFloat(style.paddingRight) || 0;
+        const visibleWidth = viewportEl.clientWidth - padLeft - padRight;
+        return Math.max(0, track.scrollWidth - visibleWidth + 32);
       };
 
-      gsap.to(track, {
-        x: () => -getScrollAmount(),
-        ease: "none",
+      const tlHoriz = gsap.timeline({
         scrollTrigger: {
           trigger: pinWrap,
           pin: true,
           scrub: 0.45,
           start: "top top",
-          end: () => `+=${getScrollAmount() + 320}`,
+          end: () => `+=${getScrollAmount() + 920}`,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
             const p = self.progress;
-            const idx = Math.min(4, Math.max(1, Math.ceil(p * 4) || 1));
+            let idx = 1;
+            if (p < 0.28) idx = 1;
+            else if (p < 0.52) idx = 2;
+            else if (p < 0.76) idx = 3;
+            else idx = 4;
             if (countEl) countEl.textContent = `0${idx} / 04`;
             if (fillEl) fillEl.style.width = `${Math.max(25, Math.round(p * 100))}%`;
           },
         },
       });
+
+      // 1. Calm arrival dwell so Card 01 doesn't start moving prematurely
+      tlHoriz.to(track, { x: 0, duration: 0.22, ease: "none" });
+      // 2. Smooth horizontal pan across all 4 cards (Card 04 lands completely inside right margin)
+      tlHoriz.to(track, { x: () => -getScrollAmount(), duration: 0.60, ease: "none" });
+      // 3. Calm exit dwell on Card 04 before unpinning
+      tlHoriz.to(track, { x: () => -getScrollAmount(), duration: 0.18, ease: "none" });
     });
   }
 
@@ -339,6 +408,7 @@
 
   let passportTl = null;
   let isPassportVisible = false;
+  let isJumpingToBooking = false;
 
   function renderPassportContent(serviceKey) {
     const data = PASSPORT_DATA[serviceKey] || PASSPORT_DATA["Бесплатный осмотр и подбор оттенка VITA"];
@@ -423,16 +493,16 @@
       start: "top 68%",
       end: "bottom 18%",
       onEnter: () => {
-        if (!isPassportVisible) playPassportSlideIn();
+        if (!isPassportVisible && !isJumpingToBooking) playPassportSlideIn();
       },
       onEnterBack: () => {
-        if (!isPassportVisible) playPassportSlideIn();
+        if (!isPassportVisible && !isJumpingToBooking) playPassportSlideIn();
       },
       onLeave: () => {
-        playPassportRetractOut();
+        if (!isJumpingToBooking) playPassportRetractOut();
       },
       onLeaveBack: () => {
-        playPassportRetractOut();
+        if (!isJumpingToBooking) playPassportRetractOut();
       },
     });
   }
@@ -444,9 +514,13 @@
     });
 
     if (serviceSelect) {
-      const options = Array.from(serviceSelect.options);
-      const found = options.find((opt) => opt.value === serviceKey);
-      if (found) serviceSelect.value = serviceKey;
+      let matched = false;
+      Array.from(serviceSelect.options).forEach((opt) => {
+        const isMatch = opt.value === serviceKey;
+        opt.selected = isMatch;
+        if (isMatch) matched = true;
+      });
+      if (matched) serviceSelect.value = serviceKey;
     }
 
     if (serviceHint) {
@@ -454,13 +528,17 @@
     }
 
     if (scrollFirst) {
+      isJumpingToBooking = true;
+      renderPassportContent(serviceKey);
       if (passportEl && hasGSAP && !prefersReducedMotion) {
         if (passportTl) passportTl.kill();
         gsap.set(passportEl, { xPercent: -96 });
         isPassportVisible = false;
       }
-      smoothScrollTo("#booking", -72);
+      // Scroll 1 mouse wheel notch lower (+54px offset) so the passport & form are framed right in front of the user
+      smoothScrollTo("#booking", 54);
       setTimeout(() => {
+        isJumpingToBooking = false;
         playPassportSlideIn(serviceKey);
       }, 1220);
     } else {

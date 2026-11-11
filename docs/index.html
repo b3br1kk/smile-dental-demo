@@ -14,16 +14,19 @@
 </head>
 <body>
 
-  <!-- 0. PRELOADER REVEAL — CENTER IRIS APERTURE EXPAND -->
+  <!-- 0. PRELOADER REVEAL — 4-PART SIMULTANEOUS HORIZONTAL CURTAIN & WORDMARK HANDOFF -->
   <div class="preloader" id="preloader" aria-hidden="true">
-    <div class="preloader__inner">
-      <span class="preloader__kicker">СТОМАТОЛОГИЯ ЭСТЕТИКИ И ПРОТЕЗИРОВАНИЯ · 13 МКР, 42</span>
-      <div class="preloader__mask" id="preloader-mask">
-        <div class="preloader__word" id="preloader-word">SMILE<span class="reg-mark">®</span></div>
-      </div>
-      <div class="preloader__bar-wrap">
-        <div class="preloader__bar" id="preloader-bar"></div>
-      </div>
+    <div class="preloader__part" data-part="0">
+      <div class="preloader__mask"><div class="preloader__word">Smile<span class="reg-mark">®</span></div></div>
+    </div>
+    <div class="preloader__part" data-part="1">
+      <div class="preloader__mask"><div class="preloader__word">Smile<span class="reg-mark">®</span></div></div>
+    </div>
+    <div class="preloader__part" data-part="2">
+      <div class="preloader__mask"><div class="preloader__word">Smile<span class="reg-mark">®</span></div></div>
+    </div>
+    <div class="preloader__part" data-part="3">
+      <div class="preloader__mask"><div class="preloader__word">Smile<span class="reg-mark">®</span></div></div>
     </div>
   </div>
 
@@ -40,10 +43,10 @@
     <div class="container topbar__inner">
       <a class="brand" href="#top" aria-label="Стоматология Смайл — На главную">
         <span class="brand__logo-wrap">
-          <img class="brand__logo-img" src="assets/logo-mark.png?v=1" alt="Логотип стоматологии Смайл" width="42" height="42">
+          <img class="brand__logo-img" src="assets/logo-mark.png?v=2" alt="Логотип стоматологии Смайл" width="42" height="42">
         </span>
         <span class="brand__text">
-          <span class="brand__name">SMILE<span class="brand__reg">®</span></span>
+          <span class="brand__name">Smile<span class="brand__reg">®</span></span>
           <span class="brand__sub">13 мкр, д. 42</span>
         </span>
       </a>
@@ -51,7 +54,7 @@
       <nav class="nav" id="main-nav" aria-label="Основная навигация">
         <span class="nav__indicator" id="nav-indicator" aria-hidden="true"></span>
         <a class="nav__link is-active" href="#about">О клинике</a>
-        <a class="nav__link" href="#services">Услуги и цены</a>
+        <a class="nav__link" href="#services">Преображение</a>
         <a class="nav__link" href="#journey">Как проходит приём</a>
         <a class="nav__link" href="#praise">Отзывы</a>
         <a class="nav__link" href="#booking">Паспорт эстетики</a>
@@ -66,9 +69,8 @@
           </svg>
           <span>+7 (3463) 20-06-77</span>
         </a>
-        <a class="btn btn--accent btn--sm" href="#booking">
+        <a class="btn btn--accent btn--sm js-pick-service" href="#booking" data-service="Бесплатный осмотр и подбор оттенка VITA">
           <span>Бесплатный осмотр</span>
-          <svg class="btn__arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
         </a>
       </div>
     </div>
@@ -76,7 +78,7 @@
 
   <main id="top">
 
-    <!-- 1. IRIS APERTURE EXPAND HERO + LIVE VITA TONE SWITCHER -->
+    <!-- 1. ARCHITECTURAL HERO + LIVE VITA TONE SWITCHER -->
     <section class="s-hero" aria-labelledby="hero-title">
       <div class="s-hero__aperture" id="hero-aperture">
         <img
@@ -89,6 +91,9 @@
           fetchpriority="high"
         >
         <div class="s-hero__scrim"></div>
+        <div class="s-hero__grid" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+        </div>
       </div>
 
       <div class="s-hero__topbar hero-reveal">
@@ -101,46 +106,57 @@
 
       <div class="container s-hero__main">
         <div class="s-hero__left">
-          <span class="s-hero__eyebrow hero-reveal">СТОМАТОЛОГИЯ «СМАЙЛ» · 13 МИКРОРАЙОН</span>
-          <h1 class="s-hero__title" id="hero-title">
-            Естественная белизна и <span class="title-accent">коронки в тон</span> родным зубам
+          <h1 class="s-hero__wordmark" id="hero-title">
+            Smile<span class="reg-mark">®</span>
           </h1>
           <p class="s-hero__lead hero-reveal">
-            Коронки из циркония и керамики, деликатная чистка Air-Flow и бережное осветление эмали Zoom. Бесплатно проведём осмотр и покажем ваш будущий оттенок по шкале VITA до начала процедур.
+            Коронки в тон родным зубам, бережное осветление эмали Zoom и мягкая чистка Air-Flow. Бесплатно проведём первый осмотр и покажем ваш будущий оттенок по шкале VITA до начала процедур.
           </p>
           <div class="s-hero__actions hero-reveal">
-            <a class="btn btn--light-hero" href="#booking">
+            <a class="btn btn--light-hero js-pick-service" href="#booking" data-service="Бесплатный осмотр и подбор оттенка VITA">
               <span>Записаться на бесплатный осмотр</span>
-              <svg class="btn__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+              <svg class="btn__arrow btn__arrow--down" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
             </a>
             <a class="btn btn--glass-hero" href="#services">
-              <span>Смотреть панораму услуг</span>
+              <span>Преображение улыбки</span>
             </a>
           </div>
         </div>
 
-        <!-- Live VITA Tone & Aesthetic Switcher right inside Hero -->
+        <!-- Live VITA Tone & Aesthetic Switcher right inside Hero (50%+ Color Swatch Cells) -->
         <aside class="s-hero__vita-card hero-reveal" aria-label="Живая примерка тона улыбки по шкале VITA">
           <div class="s-hero__vita-head">
-            <span class="s-hero__vita-kicker">ШКАЛА ОТТЕНКОВ VITA</span>
+            <span class="s-hero__vita-kicker">ПРИМЕРЬТЕ ОТТЕНОК ЭМАЛИ ПО ШКАЛЕ VITA</span>
             <strong class="s-hero__vita-current" id="hero-vita-label">Тон B1 · Светлый естественный</strong>
           </div>
 
           <div class="s-hero__vita-swatches" role="group" aria-label="Выберите тон эмали">
             <button type="button" class="vita-swatch is-active" data-tone="b1" data-label="Тон B1 · Светлый естественный (Zoom / Керамика)" data-filter="brightness(1.04) contrast(1.03) saturate(0.98)">
-              <span class="vita-swatch__chip vita-swatch__chip--b1"></span>
-              <span class="vita-swatch__code">B1</span>
-              <span class="vita-swatch__name">Светлый Zoom</span>
+              <span class="vita-swatch__chip vita-swatch__chip--b1">
+                <span class="vita-swatch__gloss"></span>
+              </span>
+              <span class="vita-swatch__meta">
+                <span class="vita-swatch__code">B1</span>
+                <span class="vita-swatch__name">Светлый Zoom</span>
+              </span>
             </button>
-            <button type="button" class="vita-swatch" data-tone="a1" data-label="Тон A1 · Натуральный жемчужный (Коронки / Air-Flow)" data-filter="brightness(1.0) contrast(1.02) saturate(1.02)">
-              <span class="vita-swatch__chip vita-swatch__chip--a1"></span>
-              <span class="vita-swatch__code">A1</span>
-              <span class="vita-swatch__name">Натуральный</span>
+            <button type="button" class="vita-swatch" data-tone="a1" data-label="Тон A1 · Тёплый натуральный жемчуг (Коронки / Air-Flow)" data-filter="brightness(0.99) contrast(1.02) saturate(1.05)">
+              <span class="vita-swatch__chip vita-swatch__chip--a1">
+                <span class="vita-swatch__gloss"></span>
+              </span>
+              <span class="vita-swatch__meta">
+                <span class="vita-swatch__code">A1</span>
+                <span class="vita-swatch__name">Натуральный</span>
+              </span>
             </button>
-            <button type="button" class="vita-swatch" data-tone="om1" data-label="Тон OM1 · Премиум цирконий и виниры" data-filter="brightness(1.08) contrast(1.05) saturate(0.94)">
-              <span class="vita-swatch__chip vita-swatch__chip--om1"></span>
-              <span class="vita-swatch__code">OM1</span>
-              <span class="vita-swatch__name">Цирконий</span>
+            <button type="button" class="vita-swatch" data-tone="om1" data-label="Тон OM1 · Сияющий цирконий и виниры" data-filter="brightness(1.09) contrast(1.05) saturate(0.92)">
+              <span class="vita-swatch__chip vita-swatch__chip--om1">
+                <span class="vita-swatch__gloss"></span>
+              </span>
+              <span class="vita-swatch__meta">
+                <span class="vita-swatch__code">OM1</span>
+                <span class="vita-swatch__name">Цирконий</span>
+              </span>
             </button>
           </div>
 
@@ -261,7 +277,6 @@
                 <div class="horiz-card__actions">
                   <button type="button" class="btn btn--accent js-pick-service" data-service="Коронки из циркония и керамики">
                     <span>Открыть паспорт услуги</span>
-                    <span aria-hidden="true">→</span>
                   </button>
                 </div>
               </div>
@@ -287,7 +302,6 @@
                 <div class="horiz-card__actions">
                   <button type="button" class="btn btn--accent js-pick-service" data-service="Бережное отбеливание Zoom">
                     <span>Открыть паспорт услуги</span>
-                    <span aria-hidden="true">→</span>
                   </button>
                 </div>
               </div>
@@ -313,7 +327,6 @@
                 <div class="horiz-card__actions">
                   <button type="button" class="btn btn--accent js-pick-service" data-service="Профгигиена Air-Flow и ультразвук">
                     <span>Открыть паспорт услуги</span>
-                    <span aria-hidden="true">→</span>
                   </button>
                 </div>
               </div>
@@ -339,7 +352,6 @@
                 <div class="horiz-card__actions">
                   <button type="button" class="btn btn--accent js-pick-service" data-service="Лечение кариеса и художественная реставрация">
                     <span>Открыть паспорт услуги</span>
-                    <span aria-hidden="true">→</span>
                   </button>
                 </div>
               </div>
@@ -600,7 +612,6 @@
 
             <button type="submit" class="btn btn--accent btn--full">
               <span>Записаться</span>
-              <span aria-hidden="true">→</span>
             </button>
 
             <p class="booking-form__feedback" id="form-feedback" role="status" aria-live="polite" hidden></p>
@@ -645,7 +656,6 @@
               </a>
               <a class="btn btn--outline-light" href="https://yandex.ru/maps/?pt=72.625420,61.077840&z=17&l=map" target="_blank" rel="noopener noreferrer">
                 <span>Открыть в Яндекс Картах</span>
-                <span aria-hidden="true">↗</span>
               </a>
             </div>
           </div>
@@ -653,7 +663,7 @@
           <div class="map-widget">
             <div class="map-widget__header">
               <div class="map-widget__brand">
-                <img class="map-widget__logo" src="assets/logo-map.png?v=1" alt="Эмблема клиники Смайл" width="40" height="40">
+                <img class="map-widget__logo" src="assets/logo-map.png?v=2" alt="Эмблема клиники Смайл" width="40" height="40">
                 <strong class="map-widget__title">Мы на карте</strong>
               </div>
               <span class="map-widget__pin-badge">
